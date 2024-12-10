@@ -240,7 +240,7 @@ public class GameView extends View {
     //绘制结束状态的游戏
     private void drawGameOver(Canvas canvas){
         //Game Over之后只绘制弹出窗显示最终得分
-        drawScoreDialog(canvas, "重新开始");
+        drawScoreDialog(canvas, "Restart");
 
         if(lastSingleClickTime > 0){
             postInvalidate();
@@ -293,7 +293,7 @@ public class GameView extends View {
         //绘制文本"飞机大战分数"
         textPaint.setTextSize(fontSize2);
         textPaint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText("飞机大战分数", w2 / 2, (h2 - fontSize2) / 2 + fontSize2, textPaint);
+        canvas.drawText("Score", w2 / 2, (h2 - fontSize2) / 2 + fontSize2, textPaint);
         //绘制"飞机大战分数"下面的横线
         canvas.translate(0, h2);
         canvas.drawLine(0, 0, w2, 0, paint);

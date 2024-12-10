@@ -12,7 +12,7 @@
     <Button android:id="@+id/btnGame"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="开始游戏"
+        android:text="Start Game"
         android:textAllCaps="false"
         android:onClick="onClick" />
 
