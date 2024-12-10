@@ -1,5 +1,4 @@
 # GamePlane
-**An Android WeChat Plane Game implemented through a custom View, supporting API Level 8+. If you think it's good, feel free to Star and Fork!**
 
 Game Description
 ----
@@ -10,17 +9,13 @@ Game Description
  4. After obtaining double bullets, the bullets become double.
  5. After obtaining the bomb reward, you can destroy all enemy planes on the screen by double-clicking.
 
- ![这里写图片描述](https://github.com/iSpring/GamePlane/blob/master/game.png)
-
- ![这里写图片描述](https://github.com/iSpring/GamePlane/blob/master/screenshot.gif)
 
 
 Implementation
 --
 
- - We defined the `Sprite` class, which is the sprite class. The planes, bullets, reward items, etc., in the game all inherit from this class. We control the sprite's position through methods like `moveTo()` and `move()`, and implement the corresponding drawing logic through `beforeDraw()`, `onDraw()`, and `afterDraw()`. The inheritance of the sprite class and its subclasses is shown below:
- 
-  ![这里写图片描述](https://github.com/iSpring/GamePlane/blob/master/sprite.png)
+ - We defined the `Sprite` class, which is the sprite class. The planes, bullets, reward items, ..., in the game all inherit from this class. We control the sprite's position through methods like `moveTo()` and `move()`, and implement the corresponding drawing logic through `beforeDraw()`, `onDraw()`, and `afterDraw()`. The inheritance of the sprite class and its subclasses is shown below:
+
 
  - `GameView` is our custom View class, mainly overriding the `onDraw()` and `onTouchEvent()` methods. The `onDraw()` source code is as follows:
 
@@ -51,7 +46,6 @@ Implementation
  - We also provide methods such as `start()`, `pause()`, `resume()`, and `destroy()` for `GameView`, making it have a lifecycle similar to that of an Activity, which is convenient for managing the state of `GameView` in an Activity.
  
  - Small enemy planes are small in size and have low resistance; medium enemy planes are medium in size and have medium resistance; large enemy planes are large in size and have high resistance. When an enemy plane is destroyed, we use an explosion effect with the following image:
-  ![这里写图片描述](http://img.blog.csdn.net/20160724162747852)
   
   This image demonstrates the effect of the explosion from start to finish in 14 stages. We use two frames to draw one stage of the explosion, so it takes 28 frames to complete the drawing of an explosion effect. After drawing the last stage, the `Explosion` class will destroy itself.
    

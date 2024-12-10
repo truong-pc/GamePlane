@@ -7,9 +7,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-/**
- * 精灵类，所有其他用于绘制的类的基类
- */
 public class Sprite {
     private boolean visible = true;
     private float x = 0;
@@ -132,7 +129,7 @@ public class Sprite {
 
     public void onDraw(Canvas canvas, Paint paint, GameView gameView){
         if(!destroyed && this.bitmap != null && getVisibility()){
-            //将Sprite绘制到Canvas上
+            //Draw the Sprite onto the Canvas
             Rect srcRef = getBitmapSrcRec();
             RectF dstRecF = getRectF();
             //canvas.drawBitmap(this.bitmap, x, y, paint);
