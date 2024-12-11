@@ -8,23 +8,20 @@ import android.graphics.RectF;
 
 import java.util.List;
 
-/**
- * 战斗机类，可以通过交互改变位置
- */
 public class CombatAircraft extends Sprite {
-    private boolean collide = false;//标识战斗机是否被击中
-    private int bombAwardCount = 0;//可使用的炸弹数
+    private boolean collide = false; //Indicates whether the fighter has been hit
+    private int bombAwardCount = 0; //Number of bombs available
 
-    //双发子弹相关
-    private boolean single = true;//标识是否发的是单一的子弹
-    private int doubleTime = 0;//当前已经用双子弹绘制的次数
-    private int maxDoubleTime = 140;//使用双子弹最多绘制的次数
+    //Double bullet?
+    private boolean single = true;
+    private int doubleTime = 0;
+    private int maxDoubleTime = 140;
 
-    //被撞击后闪烁相关
-    private long beginFlushFrame = 0;//要在第beginFlushFrame帧开始闪烁战斗机
-    private int flushTime = 0;//已经闪烁的次数
-    private int flushFrequency = 16;//在闪烁的时候，每隔16帧转变战斗机的可见性
-    private int maxFlushTime = 10;//最大闪烁次数
+    //Flashing after being hit
+    private long beginFlushFrame = 0; //Start flashing the fighter at the beginFlushFrame frame
+    private int flushTime = 0; //Number of flashes
+    private int flushFrequency = 16;
+    private int maxFlushTime = 10;
 
     public CombatAircraft(Bitmap bitmap){
         super(bitmap);
@@ -33,17 +30,16 @@ public class CombatAircraft extends Sprite {
     @Override
     protected void beforeDraw(Canvas canvas, Paint paint, GameView gameView) {
         if(!isDestroyed()){
-            //确保战斗机完全位于Canvas范围内
             validatePosition(canvas);
 
-            //每隔7帧发射子弹
+            //Fire bullets every 7 frames
             if(getFrame() % 7 == 0){
                 fight(gameView);
             }
         }
     }
 
-    //确保战斗机完全位于Canvas范围内
+    //Check if the fighter is completely within the Canvas
     private void validatePosition(Canvas canvas){
         if(getX() < 0){
             setX(0);
@@ -62,9 +58,9 @@ public class CombatAircraft extends Sprite {
         }
     }
 
-    //发射子弹
+    //Shoot Bullets
     public void fight(GameView gameView){
-        //如果战斗机被撞击了或销毁了，那么不会发射子弹
+        //If the fighter is hit or destroyed, no bullets will be fired
         if(collide || isDestroyed()){
             return;
         }
@@ -72,14 +68,14 @@ public class CombatAircraft extends Sprite {
         float x = getX() + getWidth() / 2;
         float y = getY() - 5;
         if(single){
-            //单发模式下发射单发黄色子弹
+            //Fires a single bullet in single shot mode
             Bitmap yellowBulletBitmap = gameView.getYellowBulletBitmap();
             Bullet yellowBullet = new Bullet(yellowBulletBitmap);
             yellowBullet.moveTo(x, y);
             gameView.addSprite(yellowBullet);
         }
         else{
-            //双发模式下发射两发蓝色子弹
+            //Fires two bullets in double shot mode
             float offset = getWidth() / 4;
             float leftX = x - offset;
             float rightX = x + offset;
@@ -101,42 +97,38 @@ public class CombatAircraft extends Sprite {
         }
     }
 
-    //战斗机如果被击中，执行爆炸效果
-    //具体来说，首先隐藏战斗机，然后创建爆炸效果，爆炸用28帧渲染完成
-    //爆炸效果完全渲染完成后，爆炸效果消失
-    //然后战斗机会进入闪烁模式，战斗机闪烁一定次数后销毁
+    //If the fighter is hit, execute the explosion effect
     protected void afterDraw(Canvas canvas, Paint paint, GameView gameView){
         if(isDestroyed()){
             return;
         }
 
-        //在飞机当前还没有被击中时，要判断是否将要被敌机击中
+        //Check whether the fighter has been hit or not
         if(!collide){
             List<EnemyPlane> enemies = gameView.getAliveEnemyPlanes();
             for(EnemyPlane enemyPlane : enemies){
-                Point p = getCollidePointWithOther(enemyPlane);
+                Point p = getCollidePointWithOther(enemyPlane); //p is distance between the fighter and enemies
                 if(p != null){
-                    //p为战斗机与敌机的碰撞点，如果p不为null，则表明战斗机被敌机击中
                     explode(gameView);
                     break;
                 }
             }
         }
 
-        //beginFlushFrame初始值为0，表示没有进入闪烁模式
-        //如果beginFlushFrame大于0，表示要在第如果beginFlushFrame帧进入闪烁模式
+        //beginFlushFrame == 0 -> flashing mode has not been entered
+        //beginFlushFrame > 0 -> flash mode will be entered in the first frame
         if(beginFlushFrame > 0){
             long frame = getFrame();
-            //如果当前帧数大于等于beginFlushFrame，才表示战斗机进入销毁前的闪烁状态
+            //If the current frame number >= beginFlushFrame -> the fighter enters flashing state before destroyed
             if(frame >= beginFlushFrame){
                 if((frame - beginFlushFrame) % flushFrequency == 0){
                     boolean visible = getVisibility();
                     setVisibility(!visible);
                     flushTime++;
                     if(flushTime >= maxFlushTime){
-                        //如果战斗机闪烁的次数超过了最大的闪烁次数，那么销毁战斗机
+                        //If the fighter flashes more than the maximum number of flashes, destroy the fighter
                         destroy();
-                        //Game.gameOver();
+                        //gameOver();
                     }
                 }
             }
@@ -168,7 +160,7 @@ public class CombatAircraft extends Sprite {
         }
     }
 
-    //战斗机爆炸
+    //Fighter explosion
     private void explode(GameView gameView){
         if(!collide){
             collide = true;
@@ -182,12 +174,12 @@ public class CombatAircraft extends Sprite {
         }
     }
 
-    //获取可用的炸弹数量
+    //Number of bombs available
     public int getBombCount(){
         return bombAwardCount;
     }
 
-    //战斗机使用炸弹
+    //Use bomb
     public void bomb(GameView gameView){
         if(collide || isDestroyed()){
             return;
