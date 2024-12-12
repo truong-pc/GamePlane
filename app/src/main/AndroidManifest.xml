@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ispring.gameplane" >
 
+<!--    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="33"></uses-sdk>-->
 
     <application
         android:allowBackup="true"

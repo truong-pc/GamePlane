@@ -7,10 +7,13 @@ import android.graphics.Point;
 
 import java.util.List;
 
+/**
+ * 敌机类，从上向下沿直线运动
+ */
 public class EnemyPlane extends AutoSprite {
 
-    private int power = 1;//Enemy's health
-    private int value = 0;//Score given from an enemy plane
+    private int power = 1;//敌机的抗打击能力
+    private int value = 0;//打一个敌机的得分
 
     public EnemyPlane(Bitmap bitmap){
         super(bitmap);
@@ -36,18 +39,20 @@ public class EnemyPlane extends AutoSprite {
     protected void afterDraw(Canvas canvas, Paint paint, GameView gameView) {
         super.afterDraw(canvas, paint, gameView);
 
-        //Check whether it is hit by a bullet
+        //绘制完成后要检查自身是否被子弹打中
         if(!isDestroyed()){
+            //敌机在绘制完成后要判断是否被子弹打中
+
             List<Bullet> bullets = gameView.getAliveBullets();
             for(Bullet bullet : bullets){
-                //Check whether the enemy aircraft intersects with the bullet
+                //判断敌机是否与子弹相交
                 Point p = getCollidePointWithOther(bullet);
                 if(p != null){
-                    //If there is an intersection -> the bullet hit the plane
+                    //如果有交点，说明子弹打到了飞机上
                     bullet.destroy();
                     power--;
                     if(power <= 0){
-                        //No health left -> explode enemy
+                        //敌机已经没有能量了，执行爆炸效果
                         explode(gameView);
                         return;
                     }
@@ -56,8 +61,9 @@ public class EnemyPlane extends AutoSprite {
         }
     }
 
-    //Explosion effect
+    //创建爆炸效果后会销毁敌机
     public void explode(GameView gameView){
+        //创建爆炸效果
         float centerX = getX() + getWidth() / 2;
         float centerY = getY() + getHeight() / 2;
         Bitmap bitmap = gameView.getExplosionBitmap();
@@ -65,7 +71,7 @@ public class EnemyPlane extends AutoSprite {
         explosion.centerTo(centerX, centerY);
         gameView.addSprite(explosion);
 
-        //After explosion, add score
+        //创建爆炸效果完成后，向GameView中添加得分并销毁敌机
         gameView.addScore(value);
         destroy();
     }
