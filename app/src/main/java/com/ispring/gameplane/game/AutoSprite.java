@@ -5,11 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-/**
- * 走直线的Sprite类，其位置只能直上直下
- */
 public class AutoSprite extends Sprite {
-    //每帧移动的像素数,以向下为正
+    //Number of pixels moved per frame, with downward as positive
     private float speed = 2;
 
     public AutoSprite(Bitmap bitmap){
@@ -27,14 +24,14 @@ public class AutoSprite extends Sprite {
     @Override
     protected void beforeDraw(Canvas canvas, Paint paint, GameView gameView) {
         if(!isDestroyed()){
-            //在y轴方向移动speed像素
+            //Speed y-axis
             move(0, speed * gameView.getDensity());
         }
     }
 
     protected void afterDraw(Canvas canvas, Paint paint, GameView gameView){
         if(!isDestroyed()){
-            //检查Sprite是否超出了Canvas的范围，如果超出，则销毁Sprite
+            //Destroy the Sprite if it is outside the bounds of the Canvas
             RectF canvasRecF = new RectF(0, 0, canvas.getWidth(), canvas.getHeight());
             RectF spriteRecF = getRectF();
             if(!RectF.intersects(canvasRecF, spriteRecF)){
