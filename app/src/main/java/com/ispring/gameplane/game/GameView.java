@@ -44,6 +44,7 @@ public class GameView extends View {
     11:bomb
     */
     private List<Bitmap> bitmaps = new ArrayList<Bitmap>();
+    private Bitmap backgroundBitmap;
     private float density = getResources().getDisplayMetrics().density;//Screen density
     public static final int STATUS_GAME_STARTED = 1;//Game Start
     public static final int STATUS_GAME_PAUSED = 2;//Game Pause
@@ -94,7 +95,7 @@ public class GameView extends View {
         paint.setStyle(Paint.Style.FILL);
         //Font
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.FAKE_BOLD_TEXT_FLAG);
-        textPaint.setColor(0xff000000);
+        textPaint.setColor(0xFF003366);
         fontSize = textPaint.getTextSize();
         fontSize *= density;
         fontSize2 *= density;
@@ -104,6 +105,7 @@ public class GameView extends View {
 
     public void start(int[] bitmapIds){
         destroy();
+        backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background_image);
         for(int bitmapId : bitmapIds){
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), bitmapId);
             bitmaps.add(bitmap);
@@ -149,6 +151,10 @@ public class GameView extends View {
         }
 
         super.onDraw(canvas);
+
+        if (backgroundBitmap != null) {
+            canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        }
 
         if(status == STATUS_GAME_STARTED){
             drawGameStarted(canvas);
@@ -277,17 +283,19 @@ public class GameView extends View {
         int buttonHeight = (int)(42.0 / 558.0 * canvasHeight);
 
         canvas.translate(w1, h1);
-        // Draw the background color
+        // Draw background color
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(0xFFD7DDDE);
+        paint.setColor(0xFFD8E9F0);
         Rect rect1 = new Rect(0, 0, w2, canvasHeight - 2 * h1);
         canvas.drawRect(rect1, paint);
         // Draw the border
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(0xFF515151);
+        paint.setColor(0xFF5D3A9B);
         paint.setStrokeWidth(borderSize);
         //paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeJoin(Paint.Join.ROUND);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(8);
         canvas.drawRect(rect1, paint);
         // Draw the text "Score"
         textPaint.setTextSize(fontSize2);
@@ -308,6 +316,8 @@ public class GameView extends View {
         rect2.right = w2 - rect2.left;
         rect2.top = (h4 - buttonHeight) / 2;
         rect2.bottom = h4 - rect2.top;
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(7);
         canvas.drawRect(rect2, paint);
         // Draw the text "Continue" or "Restart"
         canvas.translate(0, rect2.top);
