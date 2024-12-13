@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.media.SoundPool;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -45,6 +46,11 @@ public class GameView extends View {
     */
     private List<Bitmap> bitmaps = new ArrayList<Bitmap>();
     private Bitmap backgroundBitmap;
+    private SoundPool soundPool;
+    private int gunshotSoundId;
+    private int explosionSoundId;
+
+
     private float density = getResources().getDisplayMetrics().density;//Screen density
     public static final int STATUS_GAME_STARTED = 1;//Game Start
     public static final int STATUS_GAME_PAUSED = 2;//Game Pause
@@ -86,6 +92,21 @@ public class GameView extends View {
         init(attrs, defStyle);
     }
 
+    public SoundPool getSoundPool() {
+        return soundPool;
+    }
+
+    public int getGunshotSoundId() {
+        return gunshotSoundId;
+    }
+
+    public void playExplosionSound() {
+        if (soundPool != null && explosionSoundId != 0) {
+            soundPool.play(explosionSoundId, 1.0f, 1.0f, 1, 0, 1.0f);
+        }
+    }
+
+
     private void init(AttributeSet attrs, int defStyle) {
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.GameView, defStyle, 0);
@@ -105,6 +126,20 @@ public class GameView extends View {
 
     public void start(int[] bitmapIds){
         destroy();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            soundPool = new SoundPool.Builder()
+                    .setMaxStreams(10)
+                    .build();
+        } else {
+            soundPool = new SoundPool(10, android.media.AudioManager.STREAM_MUSIC, 0); // maxStreams = 5
+        }
+
+        // Gun sound
+        gunshotSoundId = soundPool.load(getContext(), R.raw.gunshot, 1);
+
+        // Explosion sound
+        explosionSoundId = soundPool.load(getContext(), R.raw.explosion, 1);
+
         backgroundBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.background_image);
         for(int bitmapId : bitmapIds){
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), bitmapId);
@@ -619,6 +654,11 @@ public class GameView extends View {
 
     public void destroy(){
         destroyNotRecyleBitmaps();
+
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
+        }
 
         //Release Bitmap resources
         for(Bitmap bitmap : bitmaps){

@@ -144,6 +144,7 @@ public class Sprite {
         destroyed = true;
     }
 
+
     public boolean isDestroyed(){
         return destroyed;
     }

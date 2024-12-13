@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.media.SoundPool;
 
 import java.util.List;
 
@@ -22,6 +23,9 @@ public class CombatAircraft extends Sprite {
     private int flushTime = 0; //Number of flashes
     private int flushFrequency = 16;
     private int maxFlushTime = 10;
+    private long lastGunshotFrame = 0;
+    private int gunshotDelayFrames = 7;
+
 
     public CombatAircraft(Bitmap bitmap){
         super(bitmap);
@@ -34,7 +38,7 @@ public class CombatAircraft extends Sprite {
 
             //Fire bullets every 7 frames
             if(getFrame() % 7 == 0){
-                fight(gameView);
+                fight(gameView, gameView.getSoundPool(), gameView.getGunshotSoundId());
             }
         }
     }
@@ -59,10 +63,17 @@ public class CombatAircraft extends Sprite {
     }
 
     //Shoot Bullets
-    public void fight(GameView gameView){
+    public void fight(GameView gameView, SoundPool soundPool, int gunshotSoundId){
         //If the fighter is hit or destroyed, no bullets will be fired
         if(collide || isDestroyed()){
             return;
+        }
+        long currentFrame = getFrame();
+        if (currentFrame - lastGunshotFrame >= gunshotDelayFrames) {
+            if (soundPool != null && gunshotSoundId != 0) {
+                soundPool.play(gunshotSoundId, 0.3f, 0.3f, 1, 0, 1.0f);
+            }
+            lastGunshotFrame = currentFrame;
         }
 
         float x = getX() + getWidth() / 2;
@@ -134,9 +145,9 @@ public class CombatAircraft extends Sprite {
             }
         }
 
-        //在没有被击中的情况下检查是否获得了道具
+        //Check if award taken
         if(!collide){
-            //检查是否获得炸弹道具
+            //Check if bomb award taken
             List<BombAward> bombAwards = gameView.getAliveBombAwards();
             for(BombAward bombAward : bombAwards){
                 Point p = getCollidePointWithOther(bombAward);
@@ -147,7 +158,7 @@ public class CombatAircraft extends Sprite {
                 }
             }
 
-            //检查是否获得子弹道具
+            //Check if bullet award taken
             List<BulletAward> bulletAwards = gameView.getAliveBulletAwards();
             for(BulletAward bulletAward : bulletAwards){
                 Point p = getCollidePointWithOther(bulletAward);
@@ -170,6 +181,7 @@ public class CombatAircraft extends Sprite {
             Explosion explosion = new Explosion(gameView.getExplosionBitmap());
             explosion.centerTo(centerX, centerY);
             gameView.addSprite(explosion);
+            gameView.playExplosionSound();
             beginFlushFrame = getFrame() + explosion.getExplodeDurationFrame();
         }
     }

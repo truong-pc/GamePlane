@@ -64,6 +64,7 @@ public class EnemyPlane extends AutoSprite {
         Explosion explosion = new Explosion(bitmap);
         explosion.centerTo(centerX, centerY);
         gameView.addSprite(explosion);
+        gameView.playExplosionSound();
 
         //After explosion, add score
         gameView.addScore(value);
