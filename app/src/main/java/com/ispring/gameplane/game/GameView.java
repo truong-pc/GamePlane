@@ -128,7 +128,7 @@ public class GameView extends View {
         destroy();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder()
-                    .setMaxStreams(10)
+                    .setMaxStreams(20)
                     .build();
         } else {
             soundPool = new SoundPool(10, android.media.AudioManager.STREAM_MUSIC, 0); // maxStreams = 5
