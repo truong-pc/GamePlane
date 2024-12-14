@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import com.ispring.gameplane.game.GameView;
 
-//import com.ispring.gameplane.R;
-
 public class GameActivity extends Activity {
 
     private GameView gameView;
